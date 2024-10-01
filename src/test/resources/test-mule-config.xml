@@ -1,0 +1,74 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:javabr-smb="http://www.mulesoft.org/schema/mule/javabr-smb"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/javabr-smb http://www.mulesoft.org/schema/mule/javabr-smb/current/mule-javabr-smb.xsd">
+
+  <javabr-smb:config name="configuration1"
+    bufferSize="8096">
+    <javabr-smb:connection domain="${smb.domain}"
+      host="${smb.host}"
+      username="${smb.username}"
+      password="${smb.password}"
+      share="${smb.share}" />
+  </javabr-smb:config>
+
+  <flow name="list-test1">
+    <javabr-smb:list path="${smb.path}"
+      config-ref="configuration1"/>
+  </flow>
+
+  <flow name="write-test1">
+    <set-payload value="#['1234567890']" />
+    <javabr-smb:write filename="${smb.path}/leo.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+  </flow>
+
+  <flow name="write-long32k">
+    <set-payload value="#[readUrl('classpath://testlong32k.txt', 'text/plain')]" />
+    <javabr-smb:write filename="${smb.path}/leo.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+  </flow>
+
+  <flow name="move-test1">
+    <javabr-smb:move sourceFilename="${smb.path}/leo.txt"
+      targetFilename="${smb.path}/leo_moved.txt"
+      config-ref="configuration1" />
+  </flow>
+
+  <flow name="read-test1">
+    <javabr-smb:read filename="${smb.path}/big-leo.t xt"
+      config-ref="configuration1" />
+    <javabr-smb:write filename="${smb.path}/big-leo-write.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+  </flow>
+
+
+  <flow name="delete-test1">
+    <javabr-smb:delete filename="${smb.path}/big-leo-write.txt"
+      config-ref="configuration1" />
+  </flow>
+
+
+  <flow name="write-long32kAppend">
+    <set-payload value="#[readUrl('classpath://testlong32k.txt', 'text/plain')]" />
+    <javabr-smb:write filename="${smb.path}/leo.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+
+    <set-payload value="#['1234567890']" />
+
+    <javabr-smb:write filename="${smb.path}/leo.txt"
+      writingType="APPEND"
+      config-ref="configuration1"
+      content="#[payload]"/>
+  </flow>
+
+</mule>
