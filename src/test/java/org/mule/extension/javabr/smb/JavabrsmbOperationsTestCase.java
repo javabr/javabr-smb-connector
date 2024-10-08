@@ -90,4 +90,13 @@ public class JavabrsmbOperationsTestCase extends MuleArtifactFunctionalTestCase 
         .getValue();
   }
 
+  @Test
+  public void createDirectoryTest1() throws Exception {
+    flowRunner("createDirectory-test1")
+        .run()
+        .getMessage()
+        .getPayload()
+        .getValue();
+  }
+
 }

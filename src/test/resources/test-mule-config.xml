@@ -69,6 +69,14 @@
       writingType="APPEND"
       config-ref="configuration1"
       content="#[payload]"/>
+
   </flow>
+
+  <flow name="createDirectory-test1">
+    <javabr-smb:create_directory directory="${smb.path}/leoDir"
+      config-ref="configuration1"/>
+  </flow>
+
+
 
 </mule>

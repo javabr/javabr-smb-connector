@@ -164,4 +164,18 @@ public class JavabrsmbOperations {
     return sourceFile.getInputStream();
   }
 
+  /**
+   * Creates a directory in the SMB share.
+   *
+   * @param directory     the name of the directory to create
+   * @param configuration the SMB configuration
+   * @param connection    the SMB connection
+   */
+  @MediaType(value = ANY, strict = false)
+  public void create_directory(String directory,
+      @Config JavabrsmbConfiguration configuration,
+      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
+    DiskShare share = (DiskShare) connection.getSession();
+    share.mkdir(directory);
+  }
 }
