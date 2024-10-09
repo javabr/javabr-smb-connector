@@ -18,6 +18,14 @@
       config-ref="configuration1"/>
   </flow>
 
+
+  <flow name="list-withFilter">
+    <javabr-smb:list path="${smb.path}"
+      fileMask="*leo*"
+      config-ref="configuration1"/>
+  </flow>
+
+
   <flow name="write-test1">
     <set-payload value="#['1234567890']" />
     <javabr-smb:write filename="${smb.path}/leo.txt"

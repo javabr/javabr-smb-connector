@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>[ORG_ID]</groupId>
   <artifactId>javabr-smb</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.3</version>
   <packaging>mule-extension</packaging>
   <name>Javabr-smb Extension</name>
 
@@ -17,6 +17,11 @@
   </parent>
 
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.13.3</version>
+    </dependency>
     <dependency>
       <groupId>org.mule.sdk</groupId>
       <artifactId>mule-sdk-api</artifactId>

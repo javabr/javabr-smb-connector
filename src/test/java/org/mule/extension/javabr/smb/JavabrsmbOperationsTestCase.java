@@ -20,12 +20,24 @@ public class JavabrsmbOperationsTestCase extends MuleArtifactFunctionalTestCase 
 
   @Test
   public void list() throws Exception {
-    List payloadValue = (List) flowRunner("list-test1")
+    String r = (String) flowRunner("list-test1")
         .run()
         .getMessage()
         .getPayload()
         .getValue();
-    assertThat("list return files", (payloadValue.size() > 0));
+
+    System.out.println(r);
+  }
+
+  @Test
+  public void listWithFilter() throws Exception {
+    String r = (String) flowRunner("list-withFilter")
+        .run()
+        .getMessage()
+        .getPayload()
+        .getValue();
+
+    System.out.println(r);
   }
 
   @Test

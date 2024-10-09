@@ -14,12 +14,17 @@ import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hierynomus.msdtyp.AccessMask;
+import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 import com.hierynomus.msfscc.fileinformation.FileStandardInformation;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.protocol.commons.EnumWithValue;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
 import com.hierynomus.smbj.share.DiskShare;
 import com.hierynomus.smbj.share.File;
@@ -127,19 +132,43 @@ public class JavabrsmbOperations {
    * Lists all files in a given directory on the SMB share.
    *
    * @param path          the path of the directory to list files from
+   * @param filter        regex to filter files
    * @param configuration the SMB configuration
    * @param connection    the SMB connection
    * @return a list of file names in the directory
+   * @throws JsonProcessingException
    */
-  @MediaType(value = ANY, strict = false)
-  public List<String> list(String path, @Config JavabrsmbConfiguration configuration,
-      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
+  @MediaType(MediaType.APPLICATION_JSON)
+  public String list(String path, @Optional(defaultValue = "*.*") String fileMask,
+      @Config JavabrsmbConfiguration configuration,
+      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection)
+      throws JsonProcessingException {
     DiskShare share = (DiskShare) connection.getSession();
-    List<String> files = new ArrayList<>();
-    for (FileIdBothDirectoryInformation f : share.list(path, "*.*")) {
-      files.add(f.getFileName());
+
+    List<FileIdBothDirectoryInformation> files = share.list(path, fileMask);
+
+    // Create a JSON Array (List of JSON objects)
+    List<ObjectNode> jsonFiles = new ArrayList<>();
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    for (FileIdBothDirectoryInformation file : files) {
+      // Create JSON Object for each file
+      ObjectNode jsonFile = objectMapper.createObjectNode();
+
+      jsonFile.put("filename", file.getFileName());
+
+      boolean isDirectory = (EnumWithValue.EnumUtils.isSet(file.getFileAttributes(),
+          FileAttributes.FILE_ATTRIBUTE_DIRECTORY));
+      jsonFile.put("isDirectory", isDirectory);
+      jsonFile.put("createdAt", file.getCreationTime().toString());
+
+      jsonFiles.add(jsonFile);
     }
-    return files;
+
+    // Convert the list of JSON objects to a JSON array (as string for example)
+    String jsonArray = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonFiles);
+
+    return jsonArray;
   }
 
   /**
