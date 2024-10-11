@@ -99,9 +99,21 @@ public class JavabrsmbOperations {
       @Config JavabrsmbConfiguration configuration,
       @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection)
       throws BufferException, IOException {
-    InputStream inputStream = read(sourceFilename, configuration, connection);
-    write(targetFilename, new TypedValue<InputStream>(inputStream, DataType.BYTE_ARRAY), WritingType.OVERWRITE,
+    DiskShare share = (DiskShare) connection.getSession();
+
+    File sourceFile = share.openFile(
+        sourceFilename,
+        EnumSet.of(AccessMask.GENERIC_READ),
+        null,
+        SMB2ShareAccess.ALL,
+        SMB2CreateDisposition.FILE_OPEN,
+        null);
+
+    write(targetFilename, new TypedValue<InputStream>(sourceFile.getInputStream(),
+        DataType.BYTE_ARRAY), WritingType.OVERWRITE,
         configuration, connection);
+
+    sourceFile.close();
     delete(sourceFilename, configuration, connection);
   }
 

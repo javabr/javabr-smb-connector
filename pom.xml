@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>[ORG_ID]</groupId>
+  <groupId>[org_id]</groupId>
   <artifactId>javabr-smb</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.5</version>
   <packaging>mule-extension</packaging>
   <name>Javabr-smb Extension</name>
 

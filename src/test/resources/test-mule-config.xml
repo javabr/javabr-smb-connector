@@ -44,7 +44,7 @@
 
   <flow name="move-test1">
     <javabr-smb:move sourceFilename="${smb.path}/leo.txt"
-      targetFilename="${smb.path}/leo_moved.txt"
+      targetFilename="${smb.path}/leoDir/leo_moved.txt"
       config-ref="configuration1" />
   </flow>
 
