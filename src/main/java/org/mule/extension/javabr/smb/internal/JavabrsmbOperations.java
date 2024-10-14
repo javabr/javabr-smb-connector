@@ -129,15 +129,7 @@ public class JavabrsmbOperations {
       @Config JavabrsmbConfiguration configuration,
       @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
     DiskShare share = (DiskShare) connection.getSession();
-    File sourceFile = share.openFile(
-        filename,
-        EnumSet.of(AccessMask.DELETE),
-        null,
-        SMB2ShareAccess.ALL,
-        SMB2CreateDisposition.FILE_OPEN,
-        null);
-    sourceFile.deleteOnClose();
-    sourceFile.close();
+    share.rm(filename);
   }
 
   /**

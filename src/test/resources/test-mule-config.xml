@@ -49,7 +49,7 @@
   </flow>
 
   <flow name="read-test1">
-    <javabr-smb:read filename="${smb.path}/big-leo.t xt"
+    <javabr-smb:read filename="${smb.path}/leo.txt"
       config-ref="configuration1" />
     <javabr-smb:write filename="${smb.path}/big-leo-write.txt"
       writingType="OVERWRITE"
