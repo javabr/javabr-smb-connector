@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>[ORG_ID]</groupId>
   <artifactId>javabr-smb</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <packaging>mule-extension</packaging>
   <name>Javabr-smb Extension</name>
 

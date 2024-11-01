@@ -4,9 +4,13 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -132,6 +136,13 @@ public class JavabrsmbOperations {
     share.rm(filename);
   }
 
+  private static     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+
+  private static String convertToZulu(long epochMillis) {
+    Instant instant = Instant.ofEpochMilli(epochMillis);
+    return formatter.format(instant);
+}
+
   /**
    * Lists all files in a given directory on the SMB share.
    *
@@ -159,13 +170,15 @@ public class JavabrsmbOperations {
       // Create JSON Object for each file
       ObjectNode jsonFile = objectMapper.createObjectNode();
 
-      jsonFile.put("filename", file.getFileName());
+      jsonFile.put("name", file.getFileName());
 
       boolean isDirectory = (EnumWithValue.EnumUtils.isSet(file.getFileAttributes(),
           FileAttributes.FILE_ATTRIBUTE_DIRECTORY));
       jsonFile.put("isDirectory", isDirectory);
-      jsonFile.put("createdAt", file.getCreationTime().toString());
 
+      jsonFile.put("createdAt", convertToZulu(file.getCreationTime().toEpochMillis()));
+      jsonFile.put("updatedAt", convertToZulu(file.getLastWriteTime().toEpochMillis()));
+      jsonFile.put("size", file.getEndOfFile());
       jsonFiles.add(jsonFile);
     }
 
