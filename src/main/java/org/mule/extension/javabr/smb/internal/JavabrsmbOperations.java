@@ -117,8 +117,8 @@ public class JavabrsmbOperations {
         DataType.BYTE_ARRAY), WritingType.OVERWRITE,
         configuration, connection);
 
-    sourceFile.close();
     delete(sourceFilename, configuration, connection);
+    sourceFile.close();
   }
 
   /**
@@ -134,6 +134,7 @@ public class JavabrsmbOperations {
       @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
     DiskShare share = (DiskShare) connection.getSession();
     share.rm(filename);
+
   }
 
   private static     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
