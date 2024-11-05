@@ -31,4 +31,4 @@ mvn clean deploy -DskipTests
 
 
 -----
-special thanks to the legend @malevinso that worked over the weekend to help me fix a couple bugs!
+special thanks to the legend [@malevinso](https://github.com/malevinso) that worked over the weekend to help me fix a couple bugs!
