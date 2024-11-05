@@ -28,3 +28,7 @@ mvn clean deploy -DskipTests
 ```
 
 6. That is it! You now can add JAVABR-SMB operations in your flows!
+
+
+-----
+special thanks to the legend @malevinso that worked over the weekend to help me fix a couple bugs!
