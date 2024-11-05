@@ -42,6 +42,24 @@
       content="#[payload]"/>
   </flow>
 
+  <flow name="read-and-then-moveit-test1">
+    <set-payload value="#[readUrl('classpath://testlong32k.txt', 'text/plain')]" />
+    <javabr-smb:write filename="${smb.path}/leoDir/leoMove.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+    <javabr-smb:read filename="${smb.path}/leoDir/leoMove.txt"
+      config-ref="configuration1">
+    </javabr-smb:read>
+    <javabr-smb:write filename="${smb.path}/leoDir/leoWritten.txt"
+      writingType="OVERWRITE"
+      config-ref="configuration1"
+      content="#[payload]"/>
+    <javabr-smb:move sourceFilename="${smb.path}/leoDir/leoMove.txt"
+      targetFilename="${smb.path}/leoDir/leo_moved.txt"
+      config-ref="configuration1" />
+  </flow>
+
   <flow name="move-test1">
     <javabr-smb:move sourceFilename="${smb.path}/leo.txt"
       targetFilename="${smb.path}/leoDir/leo_moved.txt"

@@ -20,16 +20,32 @@ public final class JavabrsmbConnection {
 
   private Share shareConnection = null;
 
+  private SMBClient smbClient = null;
+
+  private String domain;
+
+  private String host;
+
+  private String share;
+
+  private String username;
+
+  private String password;
+
   public JavabrsmbConnection(String domain, String host, String share, String username, String password)
       throws IOException {
+    this.domain = domain;
+    this.host = host;
+    this.share = share;
+    this.username = username;
+    this.password = password;
     this.id = domain + ":" + host + ":" + share + ":" + username;
     connect(domain, host, share, username, password);
-
   }
 
   private void connect(String domain, String host, String share, String username, String password) throws IOException {
     try {
-      SMBClient smbClient = new SMBClient();
+      smbClient = new SMBClient();
       connection = smbClient.connect(host);
       AuthenticationContext ac = new AuthenticationContext(username, password.toCharArray(), domain);
       Session session = connection.authenticate(ac);
@@ -47,7 +63,11 @@ public final class JavabrsmbConnection {
     connection.close();
   }
 
-  public Share getSession() {
+  public Share getSession() throws IOException {
+    if (!connection.isConnected() || !shareConnection.isConnected()) {
+      connection.close();
+      connect(domain, domain, domain, domain, domain);
+    }
     return shareConnection;
   }
 }

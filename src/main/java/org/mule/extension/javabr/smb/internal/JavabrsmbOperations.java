@@ -117,7 +117,7 @@ public class JavabrsmbOperations {
         DataType.BYTE_ARRAY), WritingType.OVERWRITE,
         configuration, connection);
 
-    delete(sourceFilename, configuration, connection);
+    share.rm(sourceFilename);
     sourceFile.close();
   }
 
@@ -127,22 +127,23 @@ public class JavabrsmbOperations {
    * @param filename      the name of the file to delete
    * @param configuration the SMB configuration
    * @param connection    the SMB connection
+   * @throws IOException
    */
   @MediaType(value = ANY, strict = false)
   public void delete(String filename,
       @Config JavabrsmbConfiguration configuration,
-      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
+      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) throws IOException {
     DiskShare share = (DiskShare) connection.getSession();
     share.rm(filename);
-
   }
 
-  private static     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+  private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+      .withZone(ZoneOffset.UTC);
 
   private static String convertToZulu(long epochMillis) {
     Instant instant = Instant.ofEpochMilli(epochMillis);
     return formatter.format(instant);
-}
+  }
 
   /**
    * Lists all files in a given directory on the SMB share.
@@ -158,7 +159,7 @@ public class JavabrsmbOperations {
   public String list(String path, @Optional(defaultValue = "*.*") String fileMask,
       @Config JavabrsmbConfiguration configuration,
       @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection)
-      throws JsonProcessingException {
+      throws JsonProcessingException, IOException {
     DiskShare share = (DiskShare) connection.getSession();
 
     List<FileIdBothDirectoryInformation> files = share.list(path, fileMask);
@@ -199,7 +200,7 @@ public class JavabrsmbOperations {
    */
   @MediaType(value = ANY, strict = false)
   public InputStream read(String filename, @Config JavabrsmbConfiguration configuration,
-      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
+      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) throws IOException {
     DiskShare share = (DiskShare) connection.getSession();
     File sourceFile = share.openFile(
         filename,
@@ -208,7 +209,21 @@ public class JavabrsmbOperations {
         SMB2ShareAccess.ALL,
         SMB2CreateDisposition.FILE_OPEN,
         null);
-    return sourceFile.getInputStream();
+
+    InputStream is = sourceFile.getInputStream();
+
+    return new InputStream() {
+      @Override
+      public int read() throws IOException {
+        return is.read();
+      }
+
+      @Override
+      public void close() throws IOException {
+        is.close();
+        sourceFile.close();
+      }
+    };
   }
 
   /**
@@ -221,7 +236,7 @@ public class JavabrsmbOperations {
   @MediaType(value = ANY, strict = false)
   public void create_directory(String directory,
       @Config JavabrsmbConfiguration configuration,
-      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) {
+      @org.mule.runtime.extension.api.annotation.param.Connection JavabrsmbConnection connection) throws IOException {
     DiskShare share = (DiskShare) connection.getSession();
     share.mkdir(directory);
   }
